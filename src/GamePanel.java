@@ -14,6 +14,8 @@ public class GamePanel extends Canvas implements Runnable
 {
 private static final int PWIDTH = 800;
 private static final int PHEIGHT = 500;
+private static final int NUM_AGENTS = 50;
+
 private Thread animator;
 private boolean running = false;
 private boolean gameOver = false; 
@@ -209,35 +211,36 @@ public GamePanel()
 	meuHeroi = new MeuAgente(10, 10, Color.blue);
 	listadeagentes.add(meuHeroi);
 	
-	for(int i = 0; i < 50; i++){
-		Color cor = Color.black;
+	for(int i = 0; i < NUM_AGENTS; i++){
+		MeuAgente agentTest;
 		
-		switch (rnd.nextInt(4)) {
+		switch (rnd.nextInt(3)) {
 		case 0:
-			cor = Color.red;
+			agentTest = new AgentSwordsman(10+rnd.nextInt(500), 10+rnd.nextInt(500));
+			testSpawnPosition(agentTest);
 			break;
 		case 1:
-			cor = Color.BLUE;
+			agentTest = new AgentLancer(10+rnd.nextInt(500), 10+rnd.nextInt(500));
+			testSpawnPosition(agentTest);
 			break;
 		case 2:
-			cor = Color.green;
+			agentTest = new AgentArcher(10+rnd.nextInt(500), 10+rnd.nextInt(500));
+			testSpawnPosition(agentTest);
 			break;
-	
-			
 		default:
 			break;
 		}
-		
-		
-		MeuAgente agentetest = new MeuAgente(10+rnd.nextInt(500), 10+rnd.nextInt(500), cor);	
-		while(mapa.mapa[(int)(agentetest.Y/16)][(int)(agentetest.X/16)]==1){
-			agentetest.X = 10+rnd.nextInt(500);
-			agentetest.Y = 10+rnd.nextInt(500);
-		}
-			
-		listadeagentes.add(agentetest);
 	}
 } // end of GamePanel()
+
+public void testSpawnPosition(Agente ag) {
+	while(mapa.mapa[(int)(ag.Y/16)][(int)(ag.X/16)]==1){
+		ag.X = 10+rnd.nextInt(500);
+		ag.Y = 10+rnd.nextInt(500);
+	}
+	
+	listadeagentes.add(ag);
+}
 
 public void startGame()
 // initialise and start the thread

@@ -5,9 +5,11 @@ import java.awt.Graphics2D;
 
 public class MeuAgente extends Agente {
 	
+	int attackRadius;
+	
 	Color color;
 	double vel = 40;
-	double  ang  = 0;
+	double ang = 0;
 	
 	int estado = 0;
 	
@@ -32,7 +34,6 @@ public class MeuAgente extends Agente {
 	
 	
 	public MeuAgente(int x,int y, Color color) {
-		// TODO Auto-generated constructor stub
 		X = x;
 		Y = y;
 		

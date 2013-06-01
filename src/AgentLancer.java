@@ -7,7 +7,7 @@ public class AgentLancer extends MeuAgente {
 	public static final int SPEED = 80;
 
 	public AgentLancer(int x, int y) {
-		super(x, y, Color.GREEN);
+		super(x, y, SPEED, Color.GREEN);
 	}
 
 }

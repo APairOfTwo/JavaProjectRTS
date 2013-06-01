@@ -9,7 +9,8 @@ public class MeuAgente extends Agente {
 	StateMachine state = StateMachine.IDLE;
 	
 	Color color;
-	double vel = 40;
+	int speed = 0;
+	int auxSpeed = 0;
 	double ang = 0;
 	
 	int estado = 0;
@@ -34,10 +35,11 @@ public class MeuAgente extends Agente {
 	double afastaang = 0;
 	
 	
-	public MeuAgente(int x,int y, Color color) {
+	public MeuAgente(int x, int y, int speed, Color color) {
 		X = x;
 		Y = y;
-		
+		this.speed = speed;
+		this.auxSpeed = speed;
 		aestrela = new AEstrela(GamePanel.mapa);
 		
 		this.color = color;
@@ -121,8 +123,8 @@ public class MeuAgente extends Agente {
 			timeria = 0;
 		}
 		
-		X+=Math.cos(ang)*vel*DiffTime/1000.0;
-		Y+=Math.sin(ang)*vel*DiffTime/1000.0;
+		X+=Math.cos(ang)*speed*DiffTime/1000.0;
+		Y+=Math.sin(ang)*speed*DiffTime/1000.0;
 		
 		int bx = (int)(X/16); 
 		int by = (int)(Y/16);
@@ -203,24 +205,18 @@ public class MeuAgente extends Agente {
 			}else{
 				ang = Math.atan2(dy, dx);
 			}
-			vel = 100;
+			speed = auxSpeed;
 			
-			if(afasta>0){
+			if(afasta > 0) {
 				double ang1 = Math.toDegrees(ang);
 				double ang2 = Math.toDegrees(afastaang); 
-				if(ang1>ang2){
+				if(ang1 > ang2)
 					ang = Math.toRadians(ang1 + ((ang1-ang2)/2));
-				}else{
+				else
 					ang = Math.toRadians(ang2 + ((ang2-ang1)/2));
-				}
 			}
-		}else{
-			vel = 0;	
+		} else {
+			speed = 0;	
 		}
-		
-		
-
-		
 	}
-	
 }

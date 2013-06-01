@@ -206,7 +206,7 @@ public GamePanel()
 	//mapa.loadmapfromimage("/imagemlabirinto.png");
 	mapa.loadmapfromimage("/imgcastelo.png");
 	
-	meuHeroi = new MeuAgente(10, 10, Color.blue);
+	meuHeroi = new MeuAgente(10, 10, 5, Color.MAGENTA);
 	listadeagentes.add(meuHeroi);
 	
 	for(int i = 0; i < NUM_AGENTS; i++){

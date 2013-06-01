@@ -7,7 +7,7 @@ public class AgentSwordsman extends MeuAgente {
 	public static final int SPEED = 100;
 
 	public AgentSwordsman(int x, int y) {
-		super(x, y, Color.RED);
+		super(x, y, SPEED, Color.RED);
 	}
 
 }

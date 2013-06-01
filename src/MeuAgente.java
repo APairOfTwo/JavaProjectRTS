@@ -2,10 +2,11 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 
 
-
 public class MeuAgente extends Agente {
 	
 	int attackRadius;
+	
+	StateMachine state = StateMachine.IDLE;
 	
 	Color color;
 	double vel = 40;
@@ -44,12 +45,41 @@ public class MeuAgente extends Agente {
 	
 	@Override
 	public void SimulaSe(int DiffTime) {
-		// TODO Auto-generated method stub
 		timeria+=DiffTime;
 		
 		if(setouobjetivo==true){
 			setaObjetivo(objetivox,objetivoy);
 			setouobjetivo = false;
+		}
+		
+		switch (state) {
+		case IDLE:
+			//qdo seta um objetivo, muda para marching
+			//se inimigo entra no raio de visão, muda para chasing
+			System.out.println("IDLE");
+			break;
+		case MARCHING:
+			//qdo chega no objetivo, muda para idle
+			//se inimigo entra no raio de visão, muda para chasing
+			System.out.println("MARCHING");
+			break;
+		case CHASING:
+			//se inimigo entra no raio do personagem, muda para attacking
+			//se inimigo sai do raio de visão, muda para idle
+			System.out.println("CHASING");
+			break;
+		case ATTACKING:
+			//se life menor do que X, muda para fleeing
+			//se mata o inimigo, muda para idle
+			System.out.println("ATTACKING");
+			break;
+		case FLEEING:
+			//seta como objetivo a enfermaria
+			//se life maior do que X, muda para idle
+			System.out.println("FLEEING");
+			break;
+		default:
+			break;
 		}
 		
 		if(aestrela.iniciouAestrela){
@@ -136,7 +166,6 @@ public class MeuAgente extends Agente {
 				    	colidiu = true;
 				    	afastaang = Math.atan2(day, dax);
 			    	}
-
 			    }
 		    }
 		}
@@ -145,14 +174,12 @@ public class MeuAgente extends Agente {
 
 	@Override
 	public void DesenhaSe(Graphics2D dbg, int XMundo, int YMundo) {
-		// TODO Auto-generated method stub
 		dbg.setColor(color);
 		
 		dbg.fillOval((int)(X-5)-XMundo, (int)(Y-5)-YMundo, 10, 10);
 		
 		double linefx = X + 5*Math.cos(ang);
 		double linefy = Y + 5*Math.sin(ang);dbg.drawLine((int)X-XMundo,(int)Y-YMundo, (int)linefx-XMundo, (int)linefy-YMundo);
-	
 	}
 	
 	public void setaObjetivo(int objetivox,int objetivoy){

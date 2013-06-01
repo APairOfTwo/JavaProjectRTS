@@ -32,6 +32,7 @@ boolean LEFT, RIGHT,UP,DOWN;
 public static int mousex,mousey; 
 
 public static ArrayList<Agente> listadeagentes = new ArrayList<Agente>();
+public ArrayList<Integer> selectedIndexes = new ArrayList<Integer>(); 
 
 public static Mapa_Grid mapa;
 
@@ -44,6 +45,7 @@ public int mouseReleasedX = 0, mouseReleasedY = 0;
 public int mouseDraggedX = 0, mouseDraggedY = 0;
 
 public Rectangle mouseRect;
+public boolean drawMouseRect = false;
 
 
 public static int tempo = 0;
@@ -119,6 +121,7 @@ public GamePanel()
 		@Override
 		public void mouseReleased(MouseEvent e) {
 			if(e.getButton() == 3) {
+				drawMouseRect = false;
 				mouseReleasedX = e.getX()+mapa.MapX;
 				mouseReleasedY = e.getY()+mapa.MapY;
 				mouseRect = new Rectangle(mousePressedX, mousePressedY, mouseReleasedX-mousePressedX, mouseReleasedY-mousePressedY);
@@ -130,18 +133,19 @@ public GamePanel()
 			if(e.getButton() == 3) {
 				mousePressedX = e.getX()+mapa.MapX;
 				mousePressedY = e.getY()+mapa.MapY;
+				selectedIndexes.clear();
+				drawMouseRect = true;
 			}
 			if(e.getButton() == 1) {
 				int mx = (e.getX()+mapa.MapX)/16;
 				int my = (e.getY()+mapa.MapY)/16;
 				
-				for(int i = 0;i < listadeagentes.size();i++){
-					MeuAgente agente = ((MeuAgente)listadeagentes.get(i));
+				for(int i = 0; i < selectedIndexes.size(); i++){
+					MeuAgente agente = ((MeuAgente)listadeagentes.get(selectedIndexes.get(i)));
 					agente.objetivox = mx;
 					agente.objetivoy = my;
 					agente.setouobjetivo = true;
 				}
-
 			}
 		}
 		
@@ -170,8 +174,7 @@ public GamePanel()
 	}
 	catch(IOException e) {
 		System.out.println("Load Image error:");
-	}
-	
+	}	
 	
 //	for(int i = 0; i < 20; i++){
 //		Color cor = Color.black;
@@ -311,17 +314,22 @@ private void gameUpdate(long DiffTime)
 	
 	mapa.Posiciona((int)posx,(int)posy);
 	
-	for(int i = 0;i < listadeagentes.size();i++){
-		  listadeagentes.get(i).SimulaSe((int)DiffTime);
-	}
-	
 	if(mouseRect != null) {
-		for(Agente ag : listadeagentes) {
-			if(mouseRect.intersects(ag.X, ag.Y, 5, 5)) {
-				System.out.println("colidiiu");
+		for(int i = 0; i < listadeagentes.size(); i++) {
+			if(mouseRect.intersects(listadeagentes.get(i).X, listadeagentes.get(i).Y, 5, 5)) {
+				selectedIndexes.add(i);
 			}
 		}
+		mouseRect = null;
 	}
+	
+	for(Agente ag : listadeagentes) {
+		ag.SimulaSe((int)DiffTime);
+	}
+	
+//	for(int i = 0; i < selectedIndexes.size(); i++) {
+//		listadeagentes.get(selectedIndexes.get(i)).SimulaSe((int)DiffTime);
+//	}
 }
 
 private void gameRender(Graphics2D dbg)
@@ -370,11 +378,8 @@ private void gameRender(Graphics2D dbg)
 	dbg.setColor(Color.BLUE);	
 	dbg.drawString("FPS: "+FPS+"          Tempo: "+tempo+" nodosAbertos: "+nodosabertos , 10, 10);
 	dbg.setColor(Color.RED);
-	dbg.drawRect(mousePressedX-mapa.MapX, mousePressedY-mapa.MapY, mouseDraggedX-mousePressedX, mouseDraggedY-mousePressedY);
-	
-	if(mouseRect != null)
-		dbg.fillRect(mouseRect.x-mapa.MapX, mouseRect.y-mapa.MapY, mouseRect.width, mouseRect.height);
-	
+	if(drawMouseRect)
+		dbg.drawRect(mousePressedX-mapa.MapX, mousePressedY-mapa.MapY, mouseDraggedX-mousePressedX, mouseDraggedY-mousePressedY);
 }
 
 }

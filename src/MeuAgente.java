@@ -3,6 +3,8 @@ import java.awt.Graphics2D;
 
 
 public class MeuAgente extends Agente {
+	public int ATK_RADIUS;
+	public int VISION_RADIUS;
 	
 	int attackRadius;
 	
@@ -49,25 +51,39 @@ public class MeuAgente extends Agente {
 	public void SimulaSe(int DiffTime) {
 		timeria+=DiffTime;
 		
-		if(setouobjetivo==true){
-			setaObjetivo(objetivox,objetivoy);
-			setouobjetivo = false;
-		}
-		
 		switch (state) {
 		case IDLE:
+			//speed = 0;
 			//qdo seta um objetivo, muda para marching
+			if(setouobjetivo)
+				state = StateMachine.MARCHING;
+			
 			//se inimigo entra no raio de visão, muda para chasing
+			if(checkCollisionWithEnemies(VISION_RADIUS))
+				state = StateMachine.CHASING;
+			
 			System.out.println("IDLE");
 			break;
 		case MARCHING:
 			//qdo chega no objetivo, muda para idle
+			if((estado*2) >= caminho.length)
+				state = StateMachine.IDLE;
+			
 			//se inimigo entra no raio de visão, muda para chasing
+			if(checkCollisionWithEnemies(VISION_RADIUS))
+				state = StateMachine.CHASING;
+			
 			System.out.println("MARCHING");
 			break;
 		case CHASING:
 			//se inimigo entra no raio do personagem, muda para attacking
+			if(checkCollisionWithEnemies(ATK_RADIUS))
+				state = StateMachine.ATTACKING;
+			
 			//se inimigo sai do raio de visão, muda para idle
+			if(!checkCollisionWithEnemies(VISION_RADIUS))
+				state = StateMachine.IDLE;
+			
 			System.out.println("CHASING");
 			break;
 		case ATTACKING:
@@ -84,6 +100,11 @@ public class MeuAgente extends Agente {
 			break;
 		}
 		
+		if(setouobjetivo) {
+			setaObjetivo(objetivox,objetivoy);
+			setouobjetivo = false;
+		}
+		
 		if(aestrela.iniciouAestrela){
 			if(aestrela.achoufinal==false){
 				 int[] retorno = aestrela.continuapath();
@@ -96,7 +117,7 @@ public class MeuAgente extends Agente {
 						 int pat1x = caminho2[i*2];
 						 int pat1y = caminho2[i*2+1];
 						  for(int j = 0; j < (retorno.length/2);j++){
-							  if(pat1x==retorno[j*2]&&pat1y==retorno[j*2+1]){
+							  if(pat1x == retorno[j*2] && pat1y == retorno[j*2+1]){
 								  caminho = new int[i*2+((retorno.length/2)-j)*2];
 								  for(int z = 0; z < i*2;z++){
 									  caminho[z] = caminho2[z];
@@ -174,6 +195,31 @@ public class MeuAgente extends Agente {
 		
 	}
 
+	public boolean checkCollisionWithEnemies(int radius) {
+		for (Agente ag : GamePanel.listadeagentes) {
+			if(this != ag) {
+				//TODO verificar com lista inimigos
+				
+				if(circleCollision(ag, radius/2, 5)) { //TODO hardcoded maldito
+					setaObjetivo((int)ag.X, (int)ag.Y);
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	private boolean circleCollision(Agente otherAgent, int radius, int otherRadius) {
+		double dx = otherAgent.X - X;
+		double dy = otherAgent.Y - Y;
+		float r2 = otherRadius + radius;
+		r2 = r2 * r2;
+		if(r2 > ((dx*dx)+(dy*dy))){
+			return true;
+		}
+		return false;
+	}
+
 	@Override
 	public void DesenhaSe(Graphics2D dbg, int XMundo, int YMundo) {
 		dbg.setColor(color);
@@ -198,7 +244,6 @@ public class MeuAgente extends Agente {
 			double dy = ((caminho[estado*2+1]*16)+8)-Y;
 			
 			double dist = dx*dx + dy*dy;
-			
 			
 			if(dist < 64){
 				estado++;
